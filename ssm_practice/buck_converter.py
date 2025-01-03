@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import TransferFunction, impulse, ss2tf, step, bode, normalize
+from scipy.signal import TransferFunction, impulse, ss2tf, step, bode
 
 # Parameters
 Vin = 24  # Input voltage (Volts)
 L = 0.5  # Inductance (Henries)
-C = 0.1e-3  # Capacitance (Farads)
+C = 5e-4  # Capacitance (Farads)
 R = 10  # Resistance (Ohms)
 
 # state space matrices
@@ -15,25 +15,18 @@ _C = np.array([0, 1])
 D = np.array([0])
 
 # state space to transfer function
-sys1 = TransferFunction(*ss2tf(A, B, _C, D))
-print(sys1)
-
-# Transfer function coefficients
-#numerator = [Vin / (C * L)]  # Coefficients of the numerator
-#denominator = [1, 1 / (R * C), 1 / (L * C)]  # Coefficients of the denominator
-
-# Create transfer function
-#sys2 = TransferFunction(numerator, denominator)
-#print(sys2)
+num, den = ss2tf(A, B, _C, D)
+sys = TransferFunction(num, den)
+print(sys)
 
 # Time vector for simulation
 t = np.linspace(0, 1.0, 100000)  # Simulate for 10 ms
 
 # Impulse response
-t_impulse, y_impulse = impulse(sys1, T=t)
+t_impulse, y_impulse = impulse(sys, T=t)
 
 # Step response
-t_step, y_step = step(sys1, T=t)
+t_step, y_step = step(sys, T=t)
 
 # Plot impulse response
 plt.figure(figsize=(10, 6))
@@ -54,7 +47,7 @@ plt.grid()
 plt.legend()
 
 # Frequency response (Bode plot)
-w, mag, phase = bode(sys1)
+w, mag, phase = bode(sys)
 
 plt.figure(figsize=(10, 6))
 plt.subplot(2, 1, 1)
